@@ -1,0 +1,14 @@
+.random-list-wrapper {
+  width: 100%;
+  height: 100vh;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.fetch-number {
+    padding: 10px;
+}
+.fetch-number-button {
+    width: 250px;
+}

@@ -4,14 +4,14 @@ Purpose of this project was to exercise/demonstrate FE logic skills.
 
 ## Features implemented
 
-Simple routing
-Initiali empty list of numbers
-Fetch a number on click from random number API
-Add fetched number to list
-Sort the list
-If there are multiple same numbers, note the order
-Every number has delete/decrease order buttons
-When decreased to 0, delete the number
+Simple routing,
+Display initialy empty list of numbers,
+Fetch a number on click from random number API,
+Add fetched number to list,
+Sort the list,
+If there are multiple same numbers display the order,
+Every number has delete/decrease order buttons,
+When decreased to 0, delete the number,
 
 Stats: Number of numbers, sum of numbers, min/max values
 

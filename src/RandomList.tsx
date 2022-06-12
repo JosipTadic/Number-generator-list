@@ -17,16 +17,16 @@ const RandomList: React.FC = () => {
       const response = await fetch(
         "https://www.random.org/integers/?num=1&min=1&max=20&col=1&base=10&format=plain&rnd=new"
       );
-      const singleNumber: number = await response.json();
-      numberArray.map((lastNumber) => (lastNumber.lastPulledOut = false));
-      const newRow = {
-        randomNumber: singleNumber,
-        order: setNumberFrequency(singleNumber) + 1,
+      const randomNumber: number = await response.json();
+      numberArray.map(number => (number.lastPulledOut = false));
+      const newNumber = {
+        randomNumber: randomNumber,
+        order: getNumberFrequency(randomNumber) + 1,
         id: nanoid(),
         lastPulledOut: true,
         isDeleted: false,
       };
-      setNumberArray(numberArray.concat(newRow));
+      setNumberArray(numberArray.concat(newNumber));
     } catch (error: any) {
       setErrorMessage(error.message);
     } finally {
@@ -38,11 +38,11 @@ const RandomList: React.FC = () => {
     fetchAndAddData();
   };
 
-  const clearArrays = () => {
+  const clearList = () => {
     setNumberArray([]);
   };
 
-  const setNumberFrequency = (number: number) => {
+  const getNumberFrequency = (number: number) => {
     let numberOfAppearances = 0;
     for (let i = 0; i < numberArray.length; i++) {
       if (numberArray[i].randomNumber === number) {
@@ -54,7 +54,7 @@ const RandomList: React.FC = () => {
 
   const decreaseOrder = (id: string) => {
     setNumberArray(
-      numberArray.map((number) => {
+      numberArray.map(number => {
         if (number.id === id) {
           number.order--;
           if (number.order === 0) {
@@ -68,7 +68,7 @@ const RandomList: React.FC = () => {
 
   const deleteNumber = (id: string) => {
     setNumberArray(
-      numberArray.map((number) => {
+      numberArray.map(number => {
         if (number.id === id) {
           number.isDeleted = true;
         }
@@ -77,9 +77,9 @@ const RandomList: React.FC = () => {
     );
   };
 
-  const countItems = () => {
+  const countNumbers = () => {
     let countRandomNumbers = 0;
-    numberArray.map((number) => {
+    numberArray.map(number => {
       if (!number.isDeleted) {
         return countRandomNumbers++;
       } else return 0;
@@ -88,29 +88,29 @@ const RandomList: React.FC = () => {
   };
 
   const calculateSum = () => {
-    let sumOfRandomNumbers = 0;
-    numberArray.map((number) => {
+    let sumOfNumbers = 0;
+    numberArray.map(number => {
       if (!number.isDeleted) {
-        return (sumOfRandomNumbers += number.randomNumber);
+        return (sumOfNumbers += number.randomNumber);
       } else return 0;
     });
-    return sumOfRandomNumbers;
+    return sumOfNumbers;
   };
 
-  const randomNumbersLowest = numberArray?.map(function (numberArray) {
+  const lowestNumbers = numberArray?.map(function (numberArray) {
     return !numberArray.isDeleted ? numberArray.randomNumber : Infinity;
   });
 
-  const randomNumbersHighest = numberArray?.map(function (numberArray) {
+  const highestNumbers = numberArray?.map(function (numberArray) {
     return !numberArray.isDeleted ? numberArray.randomNumber : -Infinity;
   });
 
-  const highestValue = randomNumbersHighest
-    ? Math.max(...randomNumbersHighest)
+  const highestValue = highestNumbers
+    ? Math.max(...highestNumbers)
     : 0;
 
-  const lowestValue = randomNumbersLowest
-    ? Math.min(...randomNumbersLowest)
+  const lowestValue = lowestNumbers
+    ? Math.min(...lowestNumbers)
     : 0;
 
   return (
@@ -125,7 +125,7 @@ const RandomList: React.FC = () => {
       ) : (
         <>
           <div className="fetch-list d-flex">
-            {numberLoading || countItems() > 0 ? <></> : <p>List is empty!</p>}
+            {numberLoading || countNumbers() > 0 ? <></> : <p>List is empty!</p>}
             <ul>
               {numberLoading ? (
                 <div className="d-flex text-center fetch-loading-string">
@@ -134,32 +134,32 @@ const RandomList: React.FC = () => {
               ) : (
                 numberArray
                   .sort((a, b) => a.randomNumber - b.randomNumber)
-                  .map((randomNumber) =>
-                    randomNumber.isDeleted ? (
+                  .map(number =>
+                    number.isDeleted ? (
                       <></>
                     ) : (
-                      <li key={randomNumber.id}>
+                      <li key={number.id}>
                         <div className="d-flex list-item">
                           <p className="number-from-list">
-                            {randomNumber.lastPulledOut ? (
+                            {number.lastPulledOut ? (
                               <b className="last-number">
-                                {randomNumber.randomNumber}
+                                {number.randomNumber}
                               </b>
                             ) : (
-                              randomNumber.randomNumber
+                              number.randomNumber
                             )}
-                            {randomNumber.order > 0 &&
-                            setNumberFrequency(randomNumber.randomNumber) > 1
-                              ? "/" + randomNumber.order
+                            {number.order > 0 &&
+                            getNumberFrequency(number.randomNumber) > 1
+                              ? "/" + number.order
                               : ""}
                           </p>
                           <CustomButton
-                            onClick={() => decreaseOrder(randomNumber.id)}
+                            onClick={() => decreaseOrder(number.id)}
                             buttonText={"Decrease"}
                             customStyle={"list-button btn-1"}
                           />
                           <CustomButton
-                            onClick={() => deleteNumber(randomNumber.id)}
+                            onClick={() => deleteNumber(number.id)}
                             buttonText={"Delete"}
                             customStyle={"list-button btn-1"}
                           />
@@ -171,9 +171,9 @@ const RandomList: React.FC = () => {
             </ul>
           </div>
           <div className="fetch-stats d-flex">
-            {countItems() > 0 ? (
+            {countNumbers() > 0 ? (
               <Stats
-                countItems={countItems}
+                countNumbers={countNumbers}
                 calculateSum={calculateSum}
                 highestValue={highestValue}
                 lowestValue={lowestValue}
@@ -189,7 +189,7 @@ const RandomList: React.FC = () => {
               customStyle={"custom-btn btn-1"}
             />
             <CustomButton
-              onClick={() => clearArrays()}
+              onClick={() => clearList()}
               buttonText={"Delete all!"}
               customStyle={"custom-btn btn-1"}
             />

@@ -19,7 +19,7 @@ interface IbuttonProps {
 }
 
 interface IstatsProps {
-  countItems: function;
+  countNumbers: function;
   calculateSum: function;
   highestValue: number;
   lowestValue: number;

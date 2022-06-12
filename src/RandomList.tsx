@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { nanoid } from "nanoid";
 import "./RandomList.css";
@@ -18,7 +18,7 @@ const RandomList: React.FC = () => {
         "https://www.random.org/integers/?num=1&min=1&max=20&col=1&base=10&format=plain&rnd=new"
       );
       const randomNumber: number = await response.json();
-      numberArray.map(number => (number.lastPulledOut = false));
+      numberArray.map((number) => (number.lastPulledOut = false));
       const newNumber = {
         randomNumber: randomNumber,
         order: getNumberFrequency(randomNumber) + 1,
@@ -54,7 +54,7 @@ const RandomList: React.FC = () => {
 
   const decreaseOrder = (id: string) => {
     setNumberArray(
-      numberArray.map(number => {
+      numberArray.map((number) => {
         if (number.id === id) {
           number.order--;
           if (number.order === 0) {
@@ -68,7 +68,7 @@ const RandomList: React.FC = () => {
 
   const deleteNumber = (id: string) => {
     setNumberArray(
-      numberArray.map(number => {
+      numberArray.map((number) => {
         if (number.id === id) {
           number.isDeleted = true;
         }
@@ -77,25 +77,21 @@ const RandomList: React.FC = () => {
     );
   };
 
-  const countNumbers = () => {
+  const countNumbers = useCallback(() => {
     let countRandomNumbers = 0;
-    numberArray.map(number => {
-      if (!number.isDeleted) {
-        return countRandomNumbers++;
-      } else return 0;
+    numberArray.forEach(function (number) {
+      if (!number.isDeleted) countRandomNumbers++;
     });
     return countRandomNumbers;
-  };
+  }, [numberArray]);
 
-  const calculateSum = () => {
+  const calculateSum = useCallback(() => {
     let sumOfNumbers = 0;
-    numberArray.map(number => {
-      if (!number.isDeleted) {
-        return (sumOfNumbers += number.randomNumber);
-      } else return 0;
+    numberArray.forEach(function (number) {
+      if (!number.isDeleted) sumOfNumbers += number.randomNumber;
     });
     return sumOfNumbers;
-  };
+  }, [numberArray]);
 
   const lowestNumbers = numberArray?.map(function (numberArray) {
     return !numberArray.isDeleted ? numberArray.randomNumber : Infinity;
@@ -105,13 +101,14 @@ const RandomList: React.FC = () => {
     return !numberArray.isDeleted ? numberArray.randomNumber : -Infinity;
   });
 
-  const highestValue = highestNumbers
-    ? Math.max(...highestNumbers)
-    : 0;
-
-  const lowestValue = lowestNumbers
-    ? Math.min(...lowestNumbers)
-    : 0;
+  const highestValue = useMemo(
+    () => Math.max(...highestNumbers),
+    [highestNumbers]
+  );
+  const lowestValue = useMemo(
+    () => Math.min(...lowestNumbers),
+    [lowestNumbers]
+  );
 
   return (
     <div className="d-flex random-list-wrapper">
@@ -120,82 +117,73 @@ const RandomList: React.FC = () => {
         <h1 className="text-center">Random number fetcher</h1>
         <div></div>
       </div>
-      {errorMessage.length > 1 ? (
-        <Error errorMessage={errorMessage} />
-      ) : (
-        <>
-          <div className="fetch-list d-flex">
-            {numberLoading || countNumbers() > 0 ? <></> : <p>List is empty!</p>}
-            <ul>
-              {numberLoading ? (
-                <div className="d-flex text-center fetch-loading-string">
-                  Loading...
-                </div>
-              ) : (
-                numberArray
-                  .sort((a, b) => a.randomNumber - b.randomNumber)
-                  .map(number =>
-                    number.isDeleted ? (
-                      <></>
-                    ) : (
-                      <li key={number.id}>
-                        <div className="d-flex list-item">
-                          <p className="number-from-list">
-                            {number.lastPulledOut ? (
-                              <b className="last-number">
-                                {number.randomNumber}
-                              </b>
-                            ) : (
-                              number.randomNumber
-                            )}
-                            {number.order > 0 &&
-                            getNumberFrequency(number.randomNumber) > 1
-                              ? "/" + number.order
-                              : ""}
-                          </p>
-                          <CustomButton
-                            onClick={() => decreaseOrder(number.id)}
-                            buttonText={"Decrease"}
-                            customStyle={"list-button btn-1"}
-                          />
-                          <CustomButton
-                            onClick={() => deleteNumber(number.id)}
-                            buttonText={"Delete"}
-                            customStyle={"list-button btn-1"}
-                          />
-                        </div>
-                      </li>
-                    )
+      {errorMessage.length > 1 && <Error errorMessage={errorMessage} />}
+      <div className="fetch-list d-flex">
+        {countNumbers() <= 0 && <p>List is empty!</p>}
+        <ul>
+          {numberLoading ? (
+            <div className="d-flex text-center fetch-loading-string">
+              Loading...
+            </div>
+          ) : (
+            numberArray
+              .sort((a, b) => a.randomNumber - b.randomNumber)
+              .map(
+                (number) =>
+                  !number.isDeleted && (
+                    <li key={number.id}>
+                      <div className="d-flex list-item">
+                        <p className="number-from-list">
+                          {number.lastPulledOut ? (
+                            <b className="last-number">{number.randomNumber}</b>
+                          ) : (
+                            number.randomNumber
+                          )}
+                          {number.order > 0 &&
+                            getNumberFrequency(number.randomNumber) > 1 &&
+                            "/" + number.order}
+                        </p>
+                        <CustomButton
+                          onClick={() => decreaseOrder(number.id)}
+                          buttonText={"Decrease"}
+                          customStyle={"list-button btn-1"}
+                        />
+                        <CustomButton
+                          onClick={() => deleteNumber(number.id)}
+                          buttonText={"Delete"}
+                          customStyle={"list-button btn-1"}
+                        />
+                      </div>
+                    </li>
                   )
-              )}
-            </ul>
-          </div>
-          <div className="fetch-stats d-flex">
-            {countNumbers() > 0 ? (
-              <Stats
-                countNumbers={countNumbers}
-                calculateSum={calculateSum}
-                highestValue={highestValue}
-                lowestValue={lowestValue}
-              />
-            ) : (
-              <p>Fetch a number to see stats!</p>
-            )}
-          </div>
-          <div className="fetch-number d-flex">
-            <CustomButton
-              onClick={() => fetchNumber()}
-              buttonText={"Fetch number!"}
-              customStyle={"custom-btn btn-1"}
-            />
-            <CustomButton
-              onClick={() => clearList()}
-              buttonText={"Delete all!"}
-              customStyle={"custom-btn btn-1"}
-            />
-          </div>
-        </>
-      )}
+              )
+          )}
+        </ul>
+      </div>
+      <div className="fetch-stats d-flex">
+        {countNumbers() > 0 ? (
+          <Stats
+            countNumbers={countNumbers}
+            calculateSum={calculateSum}
+            highestValue={highestValue}
+            lowestValue={lowestValue}
+          />
+        ) : (
+          <p>Fetch a number to see stats!</p>
+        )}
+      </div>
+      <div className="fetch-number d-flex">
+        <CustomButton
+          onClick={() => fetchNumber()}
+          buttonText={"Fetch number!"}
+          customStyle={"custom-btn btn-1"}
+        />
+        <CustomButton
+          onClick={() => clearList()}
+          buttonText={"Delete all!"}
+          customStyle={"custom-btn btn-1"}
+        />
+      </div>
     </div>
   );
 };

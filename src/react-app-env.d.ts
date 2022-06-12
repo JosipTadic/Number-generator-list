@@ -9,18 +9,18 @@ interface InumberArray {
 }
 
 interface IerrorProps {
-    errorMessage: string;
+  errorMessage: string;
 }
 
 interface IbuttonProps {
-    buttonText: string;
-    onClick?: function;
-    customStyle?: string;
+  buttonText: string;
+  onClick?: function;
+  customStyle?: string;
 }
 
 interface IstatsProps {
-    countItems: function;
-    calculateSum: function;
-    highestValue: number;
-    lowestValue: number;
+  countItems: function;
+  calculateSum: function;
+  highestValue: number;
+  lowestValue: number;
 }

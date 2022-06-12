@@ -1,6 +1,12 @@
 .App {
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  flex-direction: column;
+  height: 86vh;
   width: 100%;
+}
+.first-title {
+  margin: 2vh;
+  padding: 1vh;
+  height: 10vh;
 }

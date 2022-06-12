@@ -115,19 +115,22 @@ const RandomList: React.FC = () => {
 
   return (
     <div className="d-flex random-list-wrapper">
-      <div className="">
-        <Link to="/">Back to Home</Link>
-        <h1>Number fetching machine</h1>
+      <div className="d-flex second-header">
+        <Link to="/">Home</Link>
+        <h1 className="text-center">Random number fetcher</h1>
+        <div></div>
       </div>
       {errorMessage.length > 1 ? (
         <Error errorMessage={errorMessage} />
       ) : (
         <>
-          <div className="">
-            {countItems() > 0 ? <></> : <p>List is empty!</p>}
+          <div className="fetch-list d-flex">
+            {numberLoading || countItems() > 0 ? <></> : <p>List is empty!</p>}
             <ul>
               {numberLoading ? (
-                <div>Loading...</div>
+                <div className="d-flex text-center fetch-loading-string">
+                  Loading...
+                </div>
               ) : (
                 numberArray
                   .sort((a, b) => a.randomNumber - b.randomNumber)
@@ -136,30 +139,38 @@ const RandomList: React.FC = () => {
                       <></>
                     ) : (
                       <li key={randomNumber.id}>
-                        {randomNumber.lastPulledOut ? (
-                          <b>{randomNumber.randomNumber}</b>
-                        ) : (
-                          randomNumber.randomNumber
-                        )}
-                        {randomNumber.order > 0 &&
-                        setNumberFrequency(randomNumber.randomNumber) > 1
-                          ? "/" + randomNumber.order
-                          : ""}
-                        <CustomButton
-                          onClick={() => decreaseOrder(randomNumber.id)}
-                          buttonText={"Decrease"}
-                        />
-                        <CustomButton
-                          onClick={() => deleteNumber(randomNumber.id)}
-                          buttonText={"Delete"}
-                        />
+                        <div className="d-flex list-item">
+                          <p className="number-from-list">
+                            {randomNumber.lastPulledOut ? (
+                              <b className="last-number">
+                                {randomNumber.randomNumber}
+                              </b>
+                            ) : (
+                              randomNumber.randomNumber
+                            )}
+                            {randomNumber.order > 0 &&
+                            setNumberFrequency(randomNumber.randomNumber) > 1
+                              ? "/" + randomNumber.order
+                              : ""}
+                          </p>
+                          <CustomButton
+                            onClick={() => decreaseOrder(randomNumber.id)}
+                            buttonText={"Decrease"}
+                            customStyle={"list-button btn-1"}
+                          />
+                          <CustomButton
+                            onClick={() => deleteNumber(randomNumber.id)}
+                            buttonText={"Delete"}
+                            customStyle={"list-button btn-1"}
+                          />
+                        </div>
                       </li>
                     )
                   )
               )}
             </ul>
           </div>
-          <div>
+          <div className="fetch-stats d-flex">
             {countItems() > 0 ? (
               <Stats
                 countItems={countItems}
@@ -171,14 +182,16 @@ const RandomList: React.FC = () => {
               <p>Fetch a number to see stats!</p>
             )}
           </div>
-          <div className="fetch-number">
+          <div className="fetch-number d-flex">
             <CustomButton
               onClick={() => fetchNumber()}
               buttonText={"Fetch number!"}
+              customStyle={"custom-btn btn-1"}
             />
             <CustomButton
               onClick={() => clearArrays()}
               buttonText={"Delete all!"}
+              customStyle={"custom-btn btn-1"}
             />
           </div>
         </>

@@ -18,7 +18,10 @@ const RandomList: React.FC = () => {
         "https://www.random.org/integers/?num=1&min=1&max=20&col=1&base=10&format=plain&rnd=new"
       );
       const randomNumber: number = await response.json();
-      numberArray.map((number) => (number.lastPulledOut = false));
+      const newNumberArray = numberArray.map((number) => ({
+        ...number,
+        lastPulledOut: false,
+      }));
       const newNumber = {
         randomNumber: randomNumber,
         order: getNumberFrequency(randomNumber) + 1,
@@ -26,7 +29,8 @@ const RandomList: React.FC = () => {
         lastPulledOut: true,
         isDeleted: false,
       };
-      setNumberArray(numberArray.concat(newNumber));
+      newNumberArray.push(newNumber);
+      setNumberArray(newNumberArray);
     } catch (error: any) {
       setErrorMessage(error.message);
     } finally {
